@@ -112,3 +112,27 @@ class TokenPayload(SQLModel):
 class NewPassword(SQLModel):
     token: str
     new_password: str = Field(min_length=8, max_length=40)
+
+#Customers
+
+class CustomerBase(SQLModel):
+    name: str = Field(min_length=1, max_length=255)
+    email: EmailStr = Field(unique=True, index=True, max_length=255)
+    phone: str | None = Field(default=None, max_length=20)
+
+class CustomerCreate(CustomerBase):
+    pass
+
+class CustomerUpdate(CustomerBase):
+    name: str | None = Field(default=None, min_length=1, max_length=255)  # type: ignore
+    email: EmailStr | None = Field(default=None, max_length=255)  # type: ignore
+
+class Customer(CustomerBase, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+
+class CustomerPublic(CustomerBase):
+    id: uuid.UUID
+
+class CustomersPublic(SQLModel):
+    data: list[CustomerPublic]
+    count: int    
